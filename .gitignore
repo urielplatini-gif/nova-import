@@ -1,0 +1,18 @@
+# Credenciales y configuración local
+wp-config.php
+.env
+.env.*
+*.key
+*.pem
+*.sql
+*.log
+
+# Dependencias / builds
+node_modules/
+vendor/
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
