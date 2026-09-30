@@ -29,7 +29,7 @@ function novaimport_assets() {
 		array(),
 		null
 	);
-	wp_enqueue_style( 'novaimport-style', get_stylesheet_uri(), array(), '1.0' );
+	wp_enqueue_style( 'novaimport-style', get_stylesheet_uri(), array(), filemtime( get_stylesheet_directory() . '/style.css' ) );
 	wp_enqueue_script( 'novaimport-main', get_template_directory_uri() . '/js/main.js', array(), '1.0', true );
 }
 add_action( 'wp_enqueue_scripts', 'novaimport_assets' );
