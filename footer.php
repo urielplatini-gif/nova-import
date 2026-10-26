@@ -1,7 +1,4 @@
 <?php
-/**
- * Nova Import — footer.php
- */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $novaimport_shop = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' );
@@ -12,7 +9,7 @@ $novaimport_shop = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_perm
     <div class="footer-grid">
       <div class="footer-brand">
         <div class="logo">NOVA IMPORT<small>bici · moto · repuestos</small></div>
-        <p>Neumáticos, cámaras y repuestos para bici y moto. Importación directa, venta minorista y mayorista.</p>
+        <p>Neumáticos, cámaras y repuestos para bici y moto. Importamos directo de China. Venta minorista y mayorista.</p>
         <?php $c = novaimport_contact(); ?>
         <ul class="footer-contact">
           <li><a href="<?php echo esc_url( $c['maps'] ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $c['direccion'] ); ?></a></li>
@@ -49,23 +46,36 @@ $novaimport_shop = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_perm
       <div>
         <h4>Ayuda</h4>
         <ul>
-          <li><a href="<?php echo esc_url( home_url( '/#envios' ) ); ?>">Envíos</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/envios/' ) ); ?>">Envíos</a></li>
           <li><a href="<?php echo esc_url( home_url( '/mayoristas/' ) ); ?>">Ventas mayoristas</a></li>
           <li><a href="<?php echo esc_url( home_url( '/#contacto' ) ); ?>">Contacto</a></li>
           <?php
-          $novaimport_terms = function_exists( 'wc_terms_and_conditions_page_id' ) ? wc_terms_and_conditions_page_id() : 0;
-          if ( $novaimport_terms && 'publish' === get_post_status( $novaimport_terms ) ) :
-            ?>
-            <li><a href="<?php echo esc_url( get_permalink( $novaimport_terms ) ); ?>">Términos y condiciones</a></li>
-          <?php endif; ?>
-          <?php if ( get_privacy_policy_url() ) : ?>
-            <li><a href="<?php echo esc_url( get_privacy_policy_url() ); ?>">Política de privacidad</a></li>
-          <?php endif; ?>
+          // Páginas legales: solo se muestran las que están publicadas.
+          $novaimport_legal = array(
+            'terminos-y-condiciones' => 'Términos y condiciones',
+            'reembolso_devoluciones' => 'Cambios y devoluciones',
+            'privacy-policy'         => 'Política de privacidad',
+          );
+          foreach ( $novaimport_legal as $slug => $label ) :
+            $page = get_page_by_path( $slug );
+            if ( $page && 'publish' === $page->post_status ) :
+              ?>
+              <li><a href="<?php echo esc_url( get_permalink( $page ) ); ?>"><?php echo esc_html( $label ); ?></a></li>
+              <?php
+            endif;
+          endforeach;
+          ?>
         </ul>
       </div>
     </div>
+    <?php $novaimport_arrep = get_page_by_path( 'arrepentimiento' ); ?>
+    <?php if ( $novaimport_arrep && 'publish' === $novaimport_arrep->post_status ) : ?>
+      <div class="footer-arrepentimiento">
+        <a class="btn btn-ghost" href="<?php echo esc_url( get_permalink( $novaimport_arrep ) ); ?>">Botón de arrepentimiento</a>
+      </div>
+    <?php endif; ?>
     <div class="footer-bottom">
-      Nova Import — neumáticos, cámaras y repuestos para bici y moto · &copy; <?php echo esc_html( gmdate( 'Y' ) ); ?>
+      &copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> Nova Import. Neumáticos, cámaras y repuestos para bici y moto.
     </div>
   </div>
 </footer>

@@ -1,6 +1,5 @@
 <?php
 /**
- * Nova Import — functions.php
  * Tema base a medida, pensado para funcionar con el plugin WooCommerce.
  */
 
@@ -46,13 +45,6 @@ function novaimport_cart_count() {
 }
 
 /**
- * WooCommerce ya trae su propio wrapper (div#primary / main#main) cuando
- * el tema declara add_theme_support('woocommerce'), así que no hace falta
- * sobreescribir archive-product.php ni single-product.php: el estilo se
- * aplica por CSS (ver la sección "WOOCOMMERCE MAPPING" en style.css).
- */
-
-/**
  * Menú de respaldo mientras no haya un menú asignado en Apariencia → Menús.
  */
 function novaimport_menu_fallback() {
@@ -60,7 +52,7 @@ function novaimport_menu_fallback() {
 	echo '<ul>
 		<li><a href="' . esc_url( $shop ) . '">Catálogo</a></li>
 		<li><a href="' . esc_url( home_url( '/mayoristas/' ) ) . '">Mayoristas</a></li>
-		<li><a href="' . esc_url( home_url( '/#envios' ) ) . '">Envíos</a></li>
+		<li><a href="' . esc_url( home_url( '/envios/' ) ) . '">Envíos</a></li>
 		<li><a href="' . esc_url( home_url( '/#contacto' ) ) . '">Contacto</a></li>
 	</ul>';
 }
@@ -200,33 +192,47 @@ function novaimport_featured_ids() {
 	if ( ! function_exists( 'wc_get_products' ) ) {
 		return array();
 	}
-	$ids = wc_get_products(
-		array(
-			'status'   => 'publish',
-			'limit'    => 4,
-			'featured' => true,
-			'return'   => 'ids',
+	// Solo productos que se pueden comprar: con precio y con stock.
+	$sellable = function ( $ids ) {
+		return array_values(
+			array_filter(
+				$ids,
+				function ( $id ) {
+					$p = wc_get_product( $id );
+					return $p && $p->is_purchasable() && $p->is_in_stock() && '' !== $p->get_price();
+				}
+			)
+		);
+	};
+	$ids = $sellable(
+		wc_get_products(
+			array(
+				'status'   => 'publish',
+				'limit'    => 12,
+				'featured' => true,
+				'return'   => 'ids',
+			)
 		)
 	);
 	if ( count( $ids ) < 4 ) {
-		$more = wc_get_products(
-			array(
-				'status'  => 'publish',
-				'limit'   => 4 - count( $ids ),
-				'exclude' => $ids,
-				'orderby' => 'date',
-				'order'   => 'DESC',
-				'return'  => 'ids',
+		$more = $sellable(
+			wc_get_products(
+				array(
+					'status'       => 'publish',
+					'limit'        => 24,
+					'exclude'      => $ids,
+					'stock_status' => 'instock',
+					'orderby'      => 'date',
+					'order'        => 'DESC',
+					'return'       => 'ids',
+				)
 			)
 		);
 		$ids = array_merge( $ids, $more );
 	}
-	return $ids;
+	return array_slice( $ids, 0, 4 );
 }
 
-/**
- * La tienda muestra 4 columnas y 24 productos por página.
- */
 add_filter( 'loop_shop_columns', function () { return 4; } );
 add_filter( 'loop_shop_per_page', function () { return 24; } );
 
@@ -309,3 +315,63 @@ add_action(
  * de WordPress (Buscar, Páginas, Archivos, Categorías) al pie de la tienda.
  */
 remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );
+
+
+/*
+ * Correo Argentino: cuando falta el código postal o no hay cotización, el plugin agrega
+ * un "aviso" como si fuera una tarifa de $0 (WooCommerce lo muestra como "Gratis").
+ * No es una tarifa real: se muestra como "A calcular" y no deja finalizar la compra.
+ */
+
+/**
+ * Whether a shipping rate id is a Correo Argentino placeholder (not a real quote).
+ *
+ * @param string $rate_id Rate id.
+ * @return bool
+ */
+function novaimport_is_placeholder_rate( $rate_id ) {
+	return (bool) preg_match( '/^correoargentino_shipping_method_(direccion_incompleta|excess_dimensions|\d+_error)$/', (string) $rate_id );
+}
+
+/**
+ * Whether the customer has a placeholder rate selected.
+ *
+ * @return bool
+ */
+function novaimport_chosen_placeholder_rate() {
+	$chosen = ( function_exists( 'WC' ) && WC()->session ) ? (array) WC()->session->get( 'chosen_shipping_methods', array() ) : array();
+	foreach ( $chosen as $rate_id ) {
+		if ( novaimport_is_placeholder_rate( $rate_id ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+const NOVAIMPORT_MSG_ENVIO = 'Todavía no pudimos calcular el envío. Revisá que el código postal y la dirección estén completos y elegí una opción de envío con precio.';
+
+// Texto más claro para el aviso de dirección incompleta.
+add_filter(
+	'woocommerce_package_rates',
+	function ( $rates ) {
+		foreach ( $rates as $id => $rate ) {
+			if ( 'correoargentino_shipping_method_direccion_incompleta' === $id ) {
+				$rate->set_label( 'Correo Argentino: ingresá tu código postal para calcular el envío' );
+			}
+		}
+		return $rates;
+	},
+	20
+);
+
+// No se puede confirmar el pedido sin una tarifa de envío real.
+add_action(
+	'woocommerce_after_checkout_validation',
+	function ( $data, $errors ) {
+		if ( novaimport_chosen_placeholder_rate() ) {
+			$errors->add( 'shipping', NOVAIMPORT_MSG_ENVIO );
+		}
+	},
+	10,
+	2
+);

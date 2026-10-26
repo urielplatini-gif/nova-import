@@ -75,18 +75,4 @@ document.addEventListener('DOMContentLoaded', function () {
     medidaSel.addEventListener('change', updateGo);
     fillRubros();
   }
-  /* Checkout/carrito: Vía Cargo se paga en destino, no figura como "Gratis" en el resumen */
-  var fixViaCargo = function () {
-    document.querySelectorAll('.wc-block-components-totals-shipping .wc-block-components-totals-item').forEach(function (item) {
-      var label = item.querySelector('.wc-block-components-totals-item__label');
-      var value = item.querySelector('.wc-block-components-totals-item__value');
-      if (label && value && /V[ií]a Cargo/i.test(label.textContent) && value.textContent.trim() !== 'Se abona en destino') {
-        value.textContent = 'Se abona en destino';
-      }
-    });
-  };
-  if (document.querySelector('.wp-block-woocommerce-checkout, .wp-block-woocommerce-cart')) {
-    new MutationObserver(fixViaCargo).observe(document.body, { childList: true, subtree: true, characterData: true });
-    fixViaCargo();
-  }
 });

@@ -1,6 +1,5 @@
 <?php
 /**
- * Nova Import — front-page.php
  * Página de inicio. El catálogo completo vive en la página Tienda de WooCommerce.
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -13,9 +12,8 @@ $finder   = novaimport_finder_data();
 <section class="hero">
   <div class="wrap">
     <div class="hero-copy">
-      <span class="badge-pill">IMPORTACIÓN DIRECTA · SIN INTERMEDIARIOS</span>
       <h1>Neumáticos y repuestos <span class="hl">para bici y moto</span></h1>
-      <p class="lede">Cámaras, neumáticos, kits de corona y piñón y cadenas. Compra minorista o mayorista desde el mismo sitio.</p>
+      <p class="lede">Cámaras, neumáticos, kits de corona y piñón y cadenas. Importamos directo de nuestros proveedores en China y vendemos por menor y por mayor.</p>
       <div class="hero-ctas">
         <a href="<?php echo esc_url( $shop_url ); ?>" class="btn btn-primary">Ver catálogo</a>
         <a href="<?php echo esc_url( home_url( '/mayoristas/' ) ); ?>" class="btn btn-ghost">Soy vendedor mayorista</a>
@@ -63,14 +61,14 @@ $finder   = novaimport_finder_data();
     <div class="wrap">
       <div class="section-title">
         <h2>Comprá por categoría</h2>
-        <a href="<?php echo esc_url( $shop_url ); ?>">Ver todo el catálogo →</a>
+        <a href="<?php echo esc_url( $shop_url ); ?>">Ver todo el catálogo</a>
       </div>
       <div class="rubro-grid">
         <?php foreach ( $novaimport_tree as $node ) : $parent = $node['term']; ?>
           <div class="rubro-card">
             <a class="rubro-card__head" href="<?php echo esc_url( get_term_link( $parent ) ); ?>">
               <span class="rubro-card__name"><?php echo esc_html( $parent->name ); ?></span>
-              <span class="rubro-card__count"><?php echo esc_html( sprintf( _n( '%d producto', '%d productos', $parent->count, 'nova-import' ), $parent->count ) ); ?> →</span>
+              <span class="rubro-card__count"><?php echo esc_html( sprintf( _n( '%d producto', '%d productos', $parent->count, 'nova-import' ), $parent->count ) ); ?></span>
             </a>
             <?php if ( $node['children'] ) : ?>
               <div class="cat-grid">
@@ -95,7 +93,7 @@ $finder   = novaimport_finder_data();
     <div class="wrap">
       <div class="section-title">
         <h2>Productos destacados</h2>
-        <a href="<?php echo esc_url( $shop_url ); ?>">Ver más →</a>
+        <a href="<?php echo esc_url( $shop_url ); ?>">Ver todos los productos</a>
       </div>
       <?php echo do_shortcode( '[products ids="' . esc_attr( implode( ',', $novaimport_featured ) ) . '" columns="4" orderby="post__in"]' ); ?>
     </div>
@@ -110,11 +108,11 @@ $finder   = novaimport_finder_data();
     </div>
     <div class="trust-item">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
-      <div><b>Precio mayorista</b><span>Para comercios y revendedores</span></div>
+      <div><b>Cuenta mayorista</b><span>Para comercios y revendedores registrados</span></div>
     </div>
     <div class="trust-item">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8Z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-      <div><b>Envíos a todo el país</b><span>Costo y plazo visibles antes de pagar</span></div>
+      <div><b>Envíos a todo el país</b><span>Por Correo Argentino (a domicilio o sucursal) y Vía Cargo</span></div>
     </div>
   </div>
 </div>
@@ -122,9 +120,8 @@ $finder   = novaimport_finder_data();
 <section id="mayoristas" class="wholesale-cta">
   <div class="wrap">
     <div>
-      <span class="badge-pill">VENTAS MAYORISTAS</span>
       <h2>¿Tenés una bicicletería, gomería o casa de repuestos?</h2>
-      <p>Precios especiales para revendedores de todo el país. Pedí tu cuenta: la aprobamos y cargás tu pedido de bici, moto y repuestos en una sola grilla.</p>
+      <p>Pedí tu cuenta mayorista: la aprobamos y cargás tu pedido de bici, moto y repuestos en una sola grilla.</p>
     </div>
     <div class="wholesale-cta__actions">
       <?php if ( function_exists( 'nova_may_is_wholesale' ) && nova_may_is_wholesale() ) : ?>

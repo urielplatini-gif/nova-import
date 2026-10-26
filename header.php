@@ -1,7 +1,4 @@
 <?php
-/**
- * Nova Import — header.php
- */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $novaimport_menu = array(

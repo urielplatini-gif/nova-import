@@ -1,6 +1,5 @@
 <?php
 /**
- * Nova Import — index.php
  * Plantilla de respaldo (blog, búsqueda, y cualquier vista sin plantilla propia).
  */
 if ( ! defined( 'ABSPATH' ) ) exit;

@@ -1,6 +1,5 @@
 <?php
 /**
- * Nova Import — page.php
  * Páginas comunes y las de WooCommerce (Carrito, Finalizar compra, Mi cuenta).
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
